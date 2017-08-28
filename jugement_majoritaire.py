@@ -35,12 +35,12 @@ MENTIONS = [
 def create_votes():
     return [
         {
-            "hermione": random.randint(3, 6),
-            "balou": random.randint(0, 6),
+            "hermione": random.randint(2, 6),
+            "balou": random.randint(0, 3),
             "chuck-norris": random.randint(0, 2),
-            "elsa": random.randint(1, 2),
+            "elsa": random.randint(1, 3),
             "gandalf": random.randint(3, 6),
-            "beyonce": random.randint(2, 6)
+            "beyonce": random.randint(2, 5)
         } for _ in range(0, VOTES)
     ]
 
@@ -56,6 +56,7 @@ def results_hash (votes):
     for vote in votes:
         for candidate, mention in vote.items():
             results_candidates[candidate][mention] += 1
+
     return results_candidates
 
 def majoritary_mention(results):
@@ -71,9 +72,39 @@ def majoritary_mention(results):
                     "score": cumulated_votes
                 }
             i += 1
+
     return final_results
 
+def sort_by(mention):
+    list_results = []
+    for key in mention.keys():
+        list_results += [(key, (mention[key]["mention"], mention[key]["score"]))]
 
+    for i in range(0, len(list_results) - 1):
+        for j in range(0, len(list_results) - 1):
+            if list_results[j+1][1] > list_results[j][1]:
+                list_results[j+1], list_results[j] = list_results[j], list_results[j+1]
+
+    return [
+        {
+            "name": candidate[0],
+            "mention": candidate[1][0],
+            "score": candidate[1][1],
+        }
+        for candidate in list_results
+    ]
+
+
+def print_results(results):
+    for i, result in enumerate(results):
+        name = CANDIDATES[result["name"]]
+        mention = MENTIONS[result["mention"]]
+        score = result["score"]*100/VOTES
+        if i == 0:
+            print("GANGNANT: {} avec {}% de mention {}".format(name, score, mention))
+            continue
+        else:
+            print("- {} avec {}% de mention {}".format(name, score, mention))
 
 ##################################################
 #################### MAIN FUNCTION ###############
@@ -82,8 +113,10 @@ def majoritary_mention(results):
 def main():
     votes = create_votes()
     results = results_hash(votes)
-    majority = majoritary_mention(results)
-    #print(majority)
+    mention = majoritary_mention(results)
+    sorted_candidates = sort_by(mention)
+    print_results(sorted_candidates)
+
 
 if __name__ == '__main__':
     main()
