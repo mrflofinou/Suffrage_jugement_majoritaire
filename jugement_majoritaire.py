@@ -48,7 +48,16 @@ def create_votes():
 #################### FUNCTIONS ###################
 ##################################################
 
-# Your code goes here
+def results_hash (votes):
+    results_candidates = {
+        candidate: [0]*len(MENTIONS)
+        for candidate in CANDIDATES
+    }
+    for vote in votes:
+        for candidate, mention in vote.items():
+            results_candidates[candidate][mention] += 1
+    return results_candidates
+
 
 
 ##################################################
@@ -57,6 +66,9 @@ def create_votes():
 
 def main():
     votes = create_votes()
+    results = results_hash(votes)
+
+
 
 if __name__ == '__main__':
-main()
+    main()
