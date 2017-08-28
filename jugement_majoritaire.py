@@ -49,14 +49,29 @@ def create_votes():
 ##################################################
 
 def results_hash (votes):
-    results_candidates = {
-        candidate: [0]*len(MENTIONS)
-        for candidate in CANDIDATES
-    }
+    results_candidates = {}
+    for candidate in CANDIDATES:
+        results_candidates[candidate] = [0]*len(MENTIONS)
+
     for vote in votes:
         for candidate, mention in vote.items():
             results_candidates[candidate][mention] += 1
     return results_candidates
+
+def majoritary_mention(results):
+    final_results = {}
+    for key in results:
+        i=0
+        cumulated_votes = 0
+        while cumulated_votes < MEDIAN:
+            cumulated_votes += results[key][i]
+            if cumulated_votes > MEDIAN:
+                final_results[key] = {
+                    "mention": i,
+                    "score": cumulated_votes
+                }
+            i += 1
+    return final_results
 
 
 
@@ -67,8 +82,8 @@ def results_hash (votes):
 def main():
     votes = create_votes()
     results = results_hash(votes)
-
-
+    majority = majoritary_mention(results)
+    #print(majority)
 
 if __name__ == '__main__':
     main()
